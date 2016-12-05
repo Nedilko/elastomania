@@ -1,0 +1,20 @@
+h1 {
+    text-align: center;
+    color: darkslategray;
+    font-weight: 800;
+}
+
+#main-block {
+	  width: 400px;
+    height: 300px;
+    border: 1px solid darkgrey;
+    margin: 0 auto;
+}
+
+.blk {
+
+}
+
+.btn {
+
+}
