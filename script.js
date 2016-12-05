@@ -33,7 +33,7 @@ function Circle(x, y, r) {
 var
     boardWidth = 1200,
     boardHeight = 600,
-    fps = 1000,
+    fps = 50,
     direction = {
         cx: 1,
         cy: 1
