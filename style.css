@@ -11,10 +11,12 @@ h1 {
     margin: 0 auto;
 }
 
-.blk {
-
+#Board {
+	border: 1px solid black;
+    cursor: default;
 }
 
-.btn {
-
+label {
+    font-family: sans-serif;
+    font-size: 12px;
 }

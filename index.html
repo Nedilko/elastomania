@@ -3,13 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>elastomania</title>
-    <link rel="stylesheet" href="node_modules/normalize.css/normalize.css">
     <link rel="stylesheet" href="style.css">
     <script src="./bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="./min/script.min.js"></script>
+    <script src="./script.js"></script>
 
 </head>
 <body>
     <canvas id='Board'>elastomania</canvas>
+    <div class="controls">
+        <button id="start">Start</button>
+        <button id="stop" disabled>Stop</button>
+        <button id="reload">Reload</button>
+        <button id="restart">restart</button>
+        <label for="debug">debug mode</label>
+        <input type="checkbox" id="debug">
+    </div>
 </body>
 </html>
