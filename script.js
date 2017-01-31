@@ -97,6 +97,14 @@
             return false;
         }
     };
+    // TODO must be done this prototype!!!
+    Circle.prototype.isCursorInsideRadiusSetter = function (x, y, r) {
+        if (Math.pow(this.r, 2) >= (Math.pow((this.x - x), 2) + Math.pow((this.y - y), 2))) {
+            return true;
+        } else {
+            return false;
+        }
+    };
 
     function drawImagineCircle(x, y, r) {
         ctx.beginPath();
