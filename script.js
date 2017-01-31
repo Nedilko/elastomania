@@ -280,7 +280,7 @@
     //                                Math.round(Math.random()*30) + 2);                  // speed
     //    }
 
-    //    createRandom(circles, 4, boardWidth, boardHeight);
+//        createRandom(circles, 5, boardWidth, boardHeight);
 
         function step() {
 
@@ -294,7 +294,7 @@
             }
 
     //        drawLines(circles);
-    //        proximitySensor(circles);
+//            proximitySensor(circles);
 
     //        drawInfo('circle[0].x = ' + Math.round(circles[0].x), 2, 11);
     //        drawInfo('circle[0].y = ' + Math.round(circles[0].y), 2, 23);
@@ -386,9 +386,6 @@
         });
 
 
-        $('#Board').dblclick(function(){
-            circles[0].drawSetRadius(5);
-        });
 
 
 
@@ -401,6 +398,24 @@
             mouseKeyDown = false,
             inCircle = false;
 
+        $('#Board').dblclick(function(e){
+            if(!started){
+                for(var i = 0; i < circles.length; i++){
+                    if(circles[i].isCursorInside(e.pageX - boardPos.x, e.pageY - boardPos.x)){
+                        circles.splice(i,1);
+                        // clearing canvas content with white color
+                        ctx.fillStyle = '#FFFFFF';
+                        ctx.fillRect(0, 0, boardWidth, boardHeight);
+                        //drawing circles
+                        circles.forEach(function(item){
+                            item.draw();
+                        });
+                        break;
+                    }
+                }
+            }
+
+        });
 
         $('#Board').mousedown(function(e){
 
@@ -452,7 +467,7 @@
                     }
 
                     // cheking if mouse pointer inside any circle and is not started -> them highlight this circle
-                    if(!started&&!isAnyInDebugMode(circles)){
+                    if(!started&&!isAnyInDebugMode(circles)&&!mouseKeyDown){
 
                         for(var i = 0; i < circles.length; i++){
                             if (circles[i].isCursorInside(e.pageX - boardPos.x, e.pageY - boardPos.x)) {
