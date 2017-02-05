@@ -97,9 +97,9 @@
             return false;
         }
     };
-    // TODO must be done this prototype!!!
+
     Circle.prototype.isCursorInsideRadiusSetter = function (x, y, r) {
-        if (Math.pow(this.r, 2) >= (Math.pow((this.x - x), 2) + Math.pow((this.y - y), 2))) {
+        if ( (Math.pow((this.x + this.r * Math.cos(this.angle * Math.PI / 180) - x), 2) + Math.pow((this.y + this.r * Math.sin(this.angle * Math.PI / 180) - y), 2)) <= Math.pow(r, 2) ) {
             return true;
         } else {
             return false;
@@ -404,14 +404,14 @@
             newRadius,
             drawingNewCircle = false,
             mouseKeyDown = false,
-            inCircle = false;
+            inCircle = false,
+            little_circle = false;
 
         $('#Board').dblclick(function(e){
             if(!started){
                 for(var i = 0; i < circles.length; i++){
                     if(circles[i].isCursorInside(e.pageX - boardPos.x, e.pageY - boardPos.x)){
                         circles.splice(i,1);
-                        // clearing canvas content with white color
                         ctx.fillStyle = '#FFFFFF';
                         ctx.fillRect(0, 0, boardWidth, boardHeight);
                         //drawing circles
@@ -472,6 +472,37 @@
                             drawInfo('r = ' + Math.round(curRadius), 2, 35);
 
                         }
+                    }
+
+                    if(!started && isAnyInDebugMode(circles) && !mouseKeyDown){
+                        for(var i = 0; i < circles.length; i++){
+                            if(circles[i].isCursorInsideRadiusSetter(e.pageX - boardPos.x, e.pageY - boardPos.x, 5) && !little_circle){
+                                little_circle = true;
+                                // clearing canvas content with white color
+                                ctx.fillStyle = '#FFFFFF';
+                                ctx.fillRect(0, 0, boardWidth, boardHeight);
+
+                                // drawing all circles
+                                for(var j = 0; j < circles.length; j++){
+                                    circles[j].draw();
+                                }
+                                circles[i].drawSetRadius(10);
+                                break;
+                            } else if(!circles[i].isCursorInsideRadiusSetter(e.pageX - boardPos.x, e.pageY - boardPos.x, 10) && little_circle) {
+                                little_circle = false;
+                                // clearing canvas content with white color
+                                ctx.fillStyle = '#FFFFFF';
+                                ctx.fillRect(0, 0, boardWidth, boardHeight);
+
+                                // drawing all circles
+                                for(var j = 0; j < circles.length; j++){
+                                    circles[j].draw();
+                                }
+                                circles[i].drawSetRadius(5);
+                                break;
+                            }
+                        }
+
                     }
 
                     // cheking if mouse pointer inside any circle and is not started -> them highlight this circle
