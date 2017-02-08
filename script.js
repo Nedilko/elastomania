@@ -10,10 +10,6 @@
             this.cy = Math.sin(this.angle * (Math.PI / 180)) * this.speed / 10;
         };
 
-    function direction(){
-
-    }
-
     /**
      * Creating Circle instance
      * @constructor
