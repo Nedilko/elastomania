@@ -51,13 +51,24 @@
     };
 
     Circle.prototype.draw = function () {
+        ctx.fillStyle = '#EDEDED';
         if (!this.active) {
-            ctx.strokeStyle = 'black';
+            ctx.strokeStyle = 'darkgrey';
+            ctx.shadowColor = 'red';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
         } else {
             ctx.strokeStyle = 'red';
+            ctx.shadowColor = 'red';
+            ctx.shadowBlur = 15;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
         }
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.lineWidth = 1;
         ctx.stroke();
     };
 
@@ -79,6 +90,25 @@
         ctx.fillStyle = 'white';
         ctx.fill();
         ctx.strokeStyle = 'red';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    };
+
+    Circle.prototype.drawSpeed = function () {
+        // [2,32]
+        var angle = 0,
+            curAngle = 0,
+            n = 20;
+        ctx.beginPath();
+        angle = (this.speed - 1) * 360 / 31;
+        ctx.lineWidth = 2;
+        ctx.moveTo(this.x + this.r, this.y);
+        ctx.arc(this.x, this.y, this.r, 0, angle * Math.PI / 180);
+        ctx.strokeStyle = 'blue';
+        ctx.shadowColor = 'black';
+	    ctx.shadowBlur = 5;
+	    ctx.shadowOffsetX = 0;
+	    ctx.shadowOffsetY = 0;
         ctx.stroke();
     };
 
@@ -173,7 +203,14 @@
             for(var j = 0; j < circles.length; j++) {
                 db[i].push(( Math.pow(circles[i].x - circles[j].x, 2) + Math.pow(circles[i].y - circles[j].y, 2) ));
                 if( (db[i][j] <= Math.pow((circles[i].r + circles[j].r), 2))&&(db[i][j] !== 0) ) {
-                    circles[i].setAngle( 2 * Math.atan( (circles[i].y - circles[j].y)/(circles[i].x - circles[j].x) ) * 180 / Math.PI + circles[i].angle );
+
+                    circles[i].setSpeed((2*circles[j].weight*circles[j].speed + (circles[i].weight - circles[j].weight)*circles[i].speed) / (circles[i].weight + circles[j].weight));
+
+                    circles[j].setSpeed((2*circles[i].weight*circles[i].speed + (circles[j].weight - circles[i].weight)*circles[i].speed) / (circles[i].weight + circles[j].weight));
+
+//                    circles[i].setAngle( 2 * Math.atan( (circles[i].y - circles[j].y)/(circles[i].x - circles[j].x) ) * 180 / Math.PI + circles[i].angle );
+
+
                 }
             }
         }
@@ -313,7 +350,7 @@
             }
 
     //        drawLines(circles);
-//            proximitySensor(circles);
+            proximitySensor(circles);
 
     //        drawInfo('circle[0].x = ' + Math.round(circles[0].x), 2, 11);
     //        drawInfo('circle[0].y = ' + Math.round(circles[0].y), 2, 23);
@@ -401,7 +438,9 @@
         });
 
         $('#debug').change(function(){
-            debug = !debug;
+            for(var i = 0; circles.length; i++){
+                circles[i].drawSpeed();
+            }
         });
 
 
@@ -485,37 +524,6 @@
                         }
                     }
 
-                    if(!started && isAnyInDebugMode(circles) && !mouseKeyDown){
-                        for(var i = 0; i < circles.length; i++){
-                            if(circles[i].isCursorInsideRadiusSetter(e.pageX - boardPos.x, e.pageY - boardPos.x, 5) && !little_circle){
-                                little_circle = true;
-                                // clearing canvas content with white color
-                                ctx.fillStyle = '#FFFFFF';
-                                ctx.fillRect(0, 0, boardWidth, boardHeight);
-
-                                // drawing all circles
-                                for(var j = 0; j < circles.length; j++){
-                                    circles[j].draw();
-                                }
-                                circles[i].drawSetRadius(10);
-                                break;
-                            } else if(!circles[i].isCursorInsideRadiusSetter(e.pageX - boardPos.x, e.pageY - boardPos.x, 10) && little_circle) {
-                                little_circle = false;
-                                // clearing canvas content with white color
-                                ctx.fillStyle = '#FFFFFF';
-                                ctx.fillRect(0, 0, boardWidth, boardHeight);
-
-                                // drawing all circles
-                                for(var j = 0; j < circles.length; j++){
-                                    circles[j].draw();
-                                }
-                                circles[i].drawSetRadius(5);
-                                break;
-                            }
-                        }
-
-                    }
-
                     // cheking if mouse pointer inside any circle and is not started -> them highlight this circle
                     if(!started&&!isAnyInDebugMode(circles)&&!mouseKeyDown){
 
@@ -595,6 +603,7 @@
                         drawInfo('circle['+i+'].y = ' + Math.round(circles[i].y), 2, 23);
                         drawInfo('circle['+i+'].r = ' + Math.round(circles[i].r), 2, 35);
                         drawInfo('circle['+i+'].angle = ' + Math.round(circles[i].angle), 2, 47);
+                        drawInfo('circle['+i+'].speed = ' + Math.round(circles[i].speed), 2, 59);
                         break;
                     } else {
                         if (inCircle) {
