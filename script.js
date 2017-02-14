@@ -95,7 +95,7 @@
     };
 
     Circle.prototype.drawSpeed = function () {
-        // [2,32]
+        // the interval velocity is [2,32]
         var angle = 0,
             curAngle = 0,
             n = 20;
@@ -182,34 +182,40 @@
     function bordersCross(circle) {
 
         if((circle.x >= ctx.canvas.width - circle.r) || (circle.x <= circle.r)) {
-
-            if(circle.angle > 180) {
-                circle.setAngle(180 + 360 - circle.angle);
-            } else {
-                circle.setAngle(180 - circle.angle);
-            }
+            circle.cx *= -1;
         }
 
         if((circle.y >= ctx.canvas.height - circle.r) || (circle.y <= circle.r)) {
-           circle.setAngle(360 - circle.angle);
+            circle.cy *= -1;
         }
 
     }
 
     function proximitySensor(circles) {
-        var db = [];
-        for(var i = 0; i < circles.length; i++) {
+        var db = [],
+            newCx1 = 0,
+            newCy1 = 0,
+            newCx2 = 0,
+            newCy2 = 0;
+
+outer:  for(var i = 0; i < circles.length; i++) {
             db[i] = [];
             for(var j = 0; j < circles.length; j++) {
                 db[i].push(( Math.pow(circles[i].x - circles[j].x, 2) + Math.pow(circles[i].y - circles[j].y, 2) ));
                 if( (db[i][j] <= Math.pow((circles[i].r + circles[j].r), 2))&&(db[i][j] !== 0) ) {
 
-                    circles[i].setSpeed((2*circles[j].weight*circles[j].speed + (circles[i].weight - circles[j].weight)*circles[i].speed) / (circles[i].weight + circles[j].weight));
+                    newCx1 = (2*circles[j].weight*circles[j].cx + (circles[i].weight - circles[j].weight)*circles[i].cx)/(circles[i].weight + circles[j].weight);
+                    newCy1 = (2*circles[j].weight*circles[j].cy + (circles[i].weight - circles[j].weight)*circles[i].cy)/(circles[i].weight + circles[j].weight);
 
-                    circles[j].setSpeed((2*circles[i].weight*circles[i].speed + (circles[j].weight - circles[i].weight)*circles[i].speed) / (circles[i].weight + circles[j].weight));
+                    newCx2 = (2*circles[i].weight*circles[i].cx + (circles[j].weight - circles[i].weight)*circles[j].cx)/(circles[i].weight + circles[j].weight);
+                    newCy2 = (2*circles[i].weight*circles[i].cy + (circles[j].weight - circles[i].weight)*circles[j].cy)/(circles[i].weight + circles[j].weight);
 
-//                    circles[i].setAngle( 2 * Math.atan( (circles[i].y - circles[j].y)/(circles[i].x - circles[j].x) ) * 180 / Math.PI + circles[i].angle );
+                    circles[i].cx = newCx1;
+                    circles[i].cy = newCy1;
+                    circles[j].cx = newCx2;
+                    circles[j].cy = newCy2;
 
+                    break outer;
 
                 }
             }
@@ -325,8 +331,7 @@
 
         var circles = [],
             startStep,
-            started = false,
-            debug = false;
+            started = false;
 
     //    for(var i = 0; i < 4; i++) {
     //        circles[i] = new Circle(Math.round(Math.random()*(boardWidth-200))+100,     // x
@@ -435,6 +440,28 @@
             startStep = requestAnimationFrame(step);
             started = true;
 
+        });
+
+        $("#step").on('click',function(){
+
+            if (started) {
+                $('#stop').prop('disabled', true);
+                $('#start').prop('disabled', false);
+                cancelAnimationFrame(startStep);
+                startStep = undefined;
+                started = false;
+            }
+
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, boardWidth, boardHeight);
+
+            for(var i = 0; i < circles.length; i++){
+                bordersCross(circles[i]);
+                circles[i].move();
+                circles[i].draw();
+            }
+
+            proximitySensor(circles);
         });
 
         $('#debug').change(function(){
