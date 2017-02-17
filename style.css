@@ -12,7 +12,6 @@ h1 {
 }
 
 #Board {
-    display: inline-block;
 	border: 1px solid black;
     cursor: default;
 }
@@ -20,20 +19,4 @@ h1 {
 label {
     font-family: sans-serif;
     font-size: 12px;
-}
-
-#info {
-	display: inline-block;
-    position: absolute;
-    margin-left: 10px;
-    width: 100px;
-}
-
-#info > div {
-    margin-top: 2px;
-}
-
-#info > div > textarea {
-    position: absolute;
-    right: 0;
 }
