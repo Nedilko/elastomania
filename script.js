@@ -117,9 +117,14 @@
         this.y += this.cy;
     };
 
-    Circle.prototype.setAngle = function (angle) {
-        this.angle = angle;
-        direction.call(this);
+    Circle.prototype.setAngle = function () {
+        // atan is in interval [-Pi/2; Pi/2]
+        this.angle = Math.atan(this.cy / this.cx) * 180 / Math.PI;
+        if(((this.cy < 0)&&(this.cx < 0))||((this.cy > 0)&&(this.cx < 0))){
+           this.angle += 180;
+        } else if((this.cy < 0)&&(this.cx > 0)){
+            this.angle += 360;
+        }
     };
 
     Circle.prototype.setSpeed = function (speed) {
@@ -146,6 +151,13 @@
             return false;
         }
     };
+
+
+    function roundPlus(x, n){
+        if(isNaN(x) || isNaN(n)) return false;
+        var m = Math.pow(10,n);
+        return Math.round(x*m)/m;
+    }
 
     function drawImagineCircle(x, y, r) {
         ctx.beginPath();
@@ -189,6 +201,8 @@
             circle.cy *= -1;
         }
 
+        circle.setAngle();
+
     }
 
     function proximitySensor(circles) {
@@ -215,6 +229,9 @@ outer:  for(var i = 0; i < circles.length; i++) {
                     circles[j].cx = newCx2;
                     circles[j].cy = newCy2;
 
+                    circles[i].setAngle();
+                    circles[j].setAngle();
+
                     break outer;
 
                 }
@@ -240,6 +257,30 @@ outer:  for(var i = 0; i < circles.length; i++) {
         ctx.fillStyle = "#000000";
         ctx.font = "10pt Arial";
         ctx.fillText(text, x, y);
+    }
+
+    function ShowCircleInfo(circle){
+        // drawing info of current circle
+        $("#circle-cx").text(roundPlus(circle.cx, 2));
+        $("#circle-cy").text(roundPlus(circle.cy, 2));
+        $("#circle-x").text(roundPlus(circle.x, 2));
+        $("#circle-y").text(roundPlus(circle.y, 2));
+        $("#circle-r").text(circle.r);
+        $("#circle-angle").text(roundPlus(circle.angle, 2));
+        $("#circle-speed").text(circle.speed);
+    }
+
+    function showShortInfo(x, y, r){
+        if($("#circle-cx").text !== "" || $("#circle-cy").text() !== "" || $("#circle-angle").text() || $("#circle-speed").text()){
+            $("#circle-cx").text("");
+            $("#circle-cy").text("");
+            $("#circle-angle").text("");
+            $("#circle-speed").text("");
+        }
+        // drawing info of x, y, r
+        $("#circle-x").text(roundPlus(x, 2));
+        $("#circle-y").text(roundPlus(y, 2));
+        $("#circle-r").text(r);
     }
 
     function drawDirection(circles) {
@@ -331,7 +372,8 @@ outer:  for(var i = 0; i < circles.length; i++) {
 
         var circles = [],
             startStep,
-            started = false;
+            started = false,
+            curCircle = 0;
 
     //    for(var i = 0; i < 4; i++) {
     //        circles[i] = new Circle(Math.round(Math.random()*(boardWidth-200))+100,     // x
@@ -357,15 +399,8 @@ outer:  for(var i = 0; i < circles.length; i++) {
     //        drawLines(circles);
             proximitySensor(circles);
 
-    //        drawInfo('circle[0].x = ' + Math.round(circles[0].x), 2, 11);
-    //        drawInfo('circle[0].y = ' + Math.round(circles[0].y), 2, 23);
-    //        drawInfo('circle[0].r = ' + Math.round(circles[0].r), 2, 35);
-    //        drawInfo('circle[0].angle = ' + Math.round(circles[0].angle), 2, 47);
-
-    //        drawInfo('circle[1].x = ' + Math.round(circles[1].x), 2, 69);
-    //        drawInfo('circle[1].y = ' + Math.round(circles[1].y), 2, 81);
-    //        drawInfo('circle[1].r = ' + Math.round(circles[1].r), 2, 93);
-    //        drawInfo('circle[1].angle = ' + Math.round(circles[1].angle), 2, 105);
+            // drawing info of current circle
+            ShowCircleInfo(circles[curCircle]);
 
     //        drawDirection(circles);
 
@@ -462,6 +497,10 @@ outer:  for(var i = 0; i < circles.length; i++) {
             }
 
             proximitySensor(circles);
+
+            // drawing info of current circle
+            ShowCircleInfo(circles[curCircle]);
+
         });
 
         $('#debug').change(function(){
@@ -544,9 +583,9 @@ outer:  for(var i = 0; i < circles.length; i++) {
                             // drawing directions to all circles
         //                    drawDirection(circles);
                             // drawing info for last circle
+                            showShortInfo(mouseDown.x, mouseDown.y, curRadius);
                             drawInfo('x = ' + Math.round(mouseDown.x), 2, 11);
                             drawInfo('y = ' + Math.round(mouseDown.y), 2, 23);
-                            drawInfo('r = ' + Math.round(curRadius), 2, 35);
 
                         }
                     }
@@ -600,11 +639,6 @@ outer:  for(var i = 0; i < circles.length; i++) {
                         }
                 // drawing an arrows of circles directions
     //            drawDirection(circles);
-                // drawing info of the las circle
-                drawInfo('circle['+(circles.length - 1)+'].x = ' + Math.round(circles[(circles.length - 1)].x), 2, 11);
-                drawInfo('circle['+(circles.length - 1)+'].y = ' + Math.round(circles[(circles.length - 1)].y), 2, 23);
-                drawInfo('circle['+(circles.length - 1)+'].r = ' + Math.round(circles[(circles.length - 1)].r), 2, 35);
-                drawInfo('circle['+(circles.length - 1)+'].angle = ' + Math.round(circles[(circles.length - 1)].angle), 2, 47);
 
             } else {
                 for(var i = 0; i < circles.length; i++){
@@ -626,11 +660,10 @@ outer:  for(var i = 0; i < circles.length; i++) {
                         // drawing direction of all circles
 //                            drawDirection(circles);
                         // drawing info of selected circle
-                        drawInfo('circle['+i+'].x = ' + Math.round(circles[i].x), 2, 11);
-                        drawInfo('circle['+i+'].y = ' + Math.round(circles[i].y), 2, 23);
-                        drawInfo('circle['+i+'].r = ' + Math.round(circles[i].r), 2, 35);
-                        drawInfo('circle['+i+'].angle = ' + Math.round(circles[i].angle), 2, 47);
-                        drawInfo('circle['+i+'].speed = ' + Math.round(circles[i].speed), 2, 59);
+                        ShowCircleInfo(circles[i]);
+
+                        curCircle = i;
+
                         break;
                     } else {
                         if (inCircle) {
