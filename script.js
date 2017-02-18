@@ -41,15 +41,17 @@
         this.y = y;
         this.r = r;
 
-        this.active = false;
-        this.debug = false;
+        this.active = false; // flag wether circle is selected of not
+        this.debug = false; // flag wether circle parameters can be modified or not
 
-        this.weight = Math.PI * Math.pow(this.r, 2);
+        this.weight = Math.PI * Math.pow(this.r, 2); // mass of circle
 
-        this.direction = getRadians(angle);
-        this.speed = speed;
+        this.direction = getRadians(angle); // direction of circle movement depending on angle
+        this.speed = speed; // spped of a circle
 
-        direction.call(this);
+        // speed projection on x- and y-coordinates
+        this.velX = this.speed * Math.cos(this.direction);
+        this.velY = this.speed * Math.sin(this.direction);
 
     }
 
