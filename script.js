@@ -10,6 +10,15 @@
             this.cy = Math.sin(this.angle * (Math.PI / 180)) * this.speed / 10;
         };
 
+    function radians(angle){
+        if(arguments !== 0){
+            var rad  = angle * Math.PI / 180;
+            return rad;
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Creating Circle instance
      * @constructor
