@@ -47,7 +47,7 @@
         this.weight = Math.PI * Math.pow(this.r, 2); // mass of circle
 
         this.direction = getRadians(angle); // direction of circle movement depending on angle
-        this.speed = speed; // spped of a circle
+        this.speed = speed; // speed of a circle
 
         // speed projection on x- and y-coordinates
         this.velX = this.speed * Math.cos(this.direction);
