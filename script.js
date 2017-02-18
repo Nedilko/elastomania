@@ -10,7 +10,11 @@
             this.cy = Math.sin(this.angle * (Math.PI / 180)) * this.speed / 10;
         };
 
-
+    /**
+     * return radians from degrees
+     * @param   {number} angle in degrees
+     * @returns {number} angle in radians
+     */
 
     function getRadians(angle){
         if(arguments !== 0){
@@ -42,7 +46,7 @@
 
         this.weight = Math.PI * Math.pow(this.r, 2);
 
-        this.direction = angle;
+        this.direction = getRadians(angle);
         this.speed = speed;
 
         direction.call(this);
