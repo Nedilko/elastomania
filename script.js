@@ -53,6 +53,10 @@
         this.velX = this.speed * Math.cos(this.direction);
         this.velY = this.speed * Math.sin(this.direction);
 
+        // calculating balls next x- and y-position
+        this.nextX = this.x + this.velX;
+        this.nextY = this.y + this.velY;
+
     }
 
     Circle.prototype.setRadius = function (radius) {
